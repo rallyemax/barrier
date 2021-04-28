@@ -95,7 +95,7 @@ XWindowsScreen::XWindowsScreen(
     m_impl = impl;
 	assert(s_screen == NULL);
 
-	if (mouseScrollDelta==0) m_mouseScrollDelta=120;
+	if (mouseScrollDelta==0) m_mouseScrollDelta=12;
 	s_screen = this;
 
 	if (!disableXInitThreads) {
@@ -844,7 +844,9 @@ XWindowsScreen::fakeMouseWheel(SInt32 xDelta, SInt32 yDelta) const
 
     if (yDelta) { // vertical scroll
         numEvents = y_accumulateMouseScroll(yDelta);
-        if (numEvents >= 0) {
+        numEvents = std::max(1, std::abs(numEvents) / m_mouseScrollDelta);
+        LOG((CLOG_DEBUG "mouse wheel yscroll %d", numEvents));
+        if (yDelta >= 0) {
             xButton = 4; // up
         }
         else {
@@ -853,15 +855,13 @@ XWindowsScreen::fakeMouseWheel(SInt32 xDelta, SInt32 yDelta) const
     }
     else { // horizontal scroll
         numEvents = x_accumulateMouseScroll(xDelta);
-        if (numEvents >= 0) {
+        if (xDelta >= 0) {
             xButton = 7; // right
         }
         else {
             xButton = 6; // left
         }
     }
-
-    numEvents = std::abs(numEvents);
 
 	// send as many clicks as necessary
     for (; numEvents > 0; numEvents--) {
