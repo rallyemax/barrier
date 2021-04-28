@@ -479,6 +479,7 @@ void MainWindow::startBarrier()
 
     args << "-f" << "--no-tray" << "--debug" << appConfig().logLevelText();
 
+    args << "--yscroll" << QString::number(appConfig().getYScroll());
 
     args << "--name" << getScreenName();
 

@@ -97,6 +97,9 @@ class AppConfig: public QObject
         void setAutoStart(bool b);
         bool getAutoStart();
 
+        void setYScroll(int i);
+        int getYScroll();
+
         void setMinimizeToTray(bool b);
         bool getMinimizeToTray();
 
@@ -134,6 +137,7 @@ protected:
         bool m_CryptoEnabled;
         bool m_AutoHide;
         bool m_AutoStart;
+        int m_yScroll;
         bool m_MinimizeToTray;
 
         static const char m_BarriersName[];

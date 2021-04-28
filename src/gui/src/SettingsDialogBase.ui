@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>368</width>
-    <height>428</height>
+    <height>468</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -81,13 +81,42 @@
        </widget>
       </item>
       <item row="2" column="0">
+       <widget class="QLabel" name="m_pLabel_28">
+        <property name="text">
+         <string>y&amp;Scroll:</string>
+        </property>
+        <property name="buddy">
+         <cstring>m_pSpinBoxYScroll</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="m_pSpinBoxYScroll">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximum">
+         <number>960</number>
+        </property>
+        <property name="value">
+         <number>12</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
        <widget class="QLabel" name="m_pLabelElevate">
         <property name="text">
          <string>Elevate</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1">
        <widget class="QComboBox" name="m_pComboElevate">
         <property name="toolTip">
          <string>Specify when the Barrier service should run at an elevated privilege level</string>
@@ -112,21 +141,21 @@
         </item>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <widget class="QCheckBox" name="m_pCheckBoxMinimizeToTray">
         <property name="text">
          <string>Minimize to System &amp;Tray</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QCheckBox" name="m_pCheckBoxAutoHide">
         <property name="text">
          <string>&amp;Hide on startup</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <widget class="QCheckBox" name="m_pCheckBoxAutoStart">
         <property name="text">
          <string>Start &amp;Barrier on startup</string>
