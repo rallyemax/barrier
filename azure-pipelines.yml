@@ -1,10 +1,4 @@
-trigger:
-  tags:
-    include:
-    - '*'
-  branches:
-    include:
-    - '*'
+trigger: none
 
 jobs:
 - job: WinBuild
