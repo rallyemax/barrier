@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #include "platform/MSWindowsDesks.h"
 
 #include "platform/MSWindowsScreen.h"
@@ -34,6 +33,8 @@
 
 #include <malloc.h>
 #include <VersionHelpers.h>
+
+#include <algorithm>
 
 // these are only defined when WINVER >= 0x0500
 #if !defined(SPI_GETMOUSESPEED)
