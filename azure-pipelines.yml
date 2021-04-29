@@ -4,13 +4,8 @@ jobs:
 - job: WinBuild
   displayName: Windows Build
   pool: Default
-  strategy:
-    maxParallel: 1
-    matrix:
-      Debug:
-        CI_ENV_BUILD_TYPE: Debug
-      Release with Release Installer:
-        CI_ENV_BUILD_TYPE: Release
+  variables:
+    CI_ENV_BUILD_TYPE: Release
   steps:
     # Gather Dependencies
     - task: PowerShell@2
