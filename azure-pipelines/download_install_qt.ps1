@@ -16,7 +16,8 @@ Move-Item .\deps\qli-installer-$qli_install_version\ .\deps\qli-installer
 Write-Output 'Extracted QLI Installer'
 
 Write-Output 'Installing QLI Installer Dependencies'
-pip install -r .\deps\qli-installer\requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r .\deps\qli-installer\requirements.txt
 Write-Output 'Installed QLI Installer Dependencies'
 
 Write-Output 'Starting QT Installer'
