@@ -338,6 +338,11 @@ MSWindowsDesks::fakeMouseRelativeMove(SInt32 dx, SInt32 dy) const
 void
 MSWindowsDesks::fakeMouseWheel(SInt32 xDelta, SInt32 yDelta) const
 {
+    if (yDelta != 0) {
+        LOG((CLOG_DEBUG "wheel pre-limit: %d", yDelta));
+        // Limit yDelta to range -120 through 120
+        yDelta = (yDelta < 0 ? -1 : 1) * std::min(120, std::abs(yDelta));
+    }
     sendMessage(BARRIER_MSG_FAKE_WHEEL, xDelta, yDelta);
 }
 
@@ -692,7 +697,7 @@ MSWindowsDesks::deskThread(void* vdesk)
 
         case BARRIER_MSG_FAKE_WHEEL:
             if (msg.lParam != 0) {
-                LOG((CLOG_DEBUG "MSWindowsDesks wheel msg: yDelta %d", msg.lParam));
+                LOG((CLOG_DEBUG "wheel msg recvd: %d", msg.lParam));
                 mouse_event(MOUSEEVENTF_WHEEL, 0, 0, (DWORD)msg.lParam, 0);
             }
             else if (IsWindowsVistaOrGreater() && msg.wParam != 0) {

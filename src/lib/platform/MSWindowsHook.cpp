@@ -471,7 +471,6 @@ mouseHookHandler(WPARAM wParam, SInt32 x, SInt32 y, SInt32 data)
 
     case WM_MOUSEWHEEL:
         if (g_mode == kHOOK_RELAY_EVENTS) {
-            LOG((CLOG_DEBUG "MSWindowsHook wheel msg: data %d", data));
             // relay event
             PostThreadMessage(g_threadID, BARRIER_MSG_MOUSE_WHEEL, data, 0);
         }
