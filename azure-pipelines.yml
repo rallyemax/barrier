@@ -1,4 +1,5 @@
-trigger: none
+trigger:
+- fix-windows-scroll
 
 jobs:
 - job: WinBuild
