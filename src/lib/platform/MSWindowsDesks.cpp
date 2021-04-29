@@ -341,7 +341,7 @@ MSWindowsDesks::fakeMouseWheel(SInt32 xDelta, SInt32 yDelta) const
     if (yDelta != 0) {
         LOG((CLOG_DEBUG "wheel pre-limit: %d", yDelta));
         // Limit yDelta to range -120 through 120
-        yDelta = (yDelta < 0 ? -1 : 1) * std::min(120, std::abs(yDelta));
+        yDelta = (yDelta < 0 ? -1 : 1) * (std::min)(120, (std::abs)(yDelta));
     }
     sendMessage(BARRIER_MSG_FAKE_WHEEL, xDelta, yDelta);
 }
