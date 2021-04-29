@@ -692,7 +692,7 @@ MSWindowsDesks::deskThread(void* vdesk)
 
         case BARRIER_MSG_FAKE_WHEEL:
             if (msg.lParam != 0) {
-                LOG((CLOG_DEBUG "wheel msg: yDelta %d", msg.lParam));
+                LOG((CLOG_DEBUG "MSWindowsDesks wheel msg: yDelta %d", msg.lParam));
                 mouse_event(MOUSEEVENTF_WHEEL, 0, 0, (DWORD)msg.lParam, 0);
             }
             else if (IsWindowsVistaOrGreater() && msg.wParam != 0) {
