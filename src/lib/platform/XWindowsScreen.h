@@ -26,6 +26,8 @@
 
 #include <X11/Xlib.h>
 
+#include <array>
+
 class XWindowsClipboard;
 class XWindowsKeyState;
 class XWindowsScreenSaver;
@@ -33,8 +35,12 @@ class XWindowsScreenSaver;
 //! Implementation of IPlatformScreen for X11
 class XWindowsScreen : public PlatformScreen {
 public:
-    XWindowsScreen(IXWindowsImpl* impl, const char* displayName, bool isPrimary,
-        bool disableXInitThreads, int mouseScrollDelta,
+    XWindowsScreen(
+        IXWindowsImpl* impl,
+        const char* displayName,
+        bool isPrimary,
+        bool disableXInitThreads,
+        int mouseScrollDelta,
         IEventQueue* events);
     virtual ~XWindowsScreen();
 
@@ -137,6 +143,7 @@ private:
     // been taken into account
     int                 x_accumulateMouseScroll(SInt32 xDelta) const;
     int                 y_accumulateMouseScroll(SInt32 yDelta) const;
+    int                 y_scaleMouseScroll(SInt32 yDelta) const;
 
     bool                detectXI2();
 #ifdef HAVE_XI2
@@ -177,8 +184,9 @@ private:
     // true if screen is being used as a primary screen, false otherwise
     bool                m_isPrimary;
 
-    // The size of a smallest supported scroll event, in points
+    // For adjusting scroll speed
     int                 m_mouseScrollDelta;
+    std::array<int, 8>  m_mouseScrollScaler;
 
     // Accumulates scrolls of less than m_?_mouseScrollDelta across multiple
     // scroll events. We dispatch a scroll event whenever the accumulated scroll

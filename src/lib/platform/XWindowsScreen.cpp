@@ -33,10 +33,14 @@
 #include "base/IEventQueue.h"
 #include "base/TMethodEventJob.h"
 
+#include <algorithm>
+#include <array>
+#include <cmath>
 #include <cstring>
 #include <cstdlib>
-#include <algorithm>
+#include <string>
 
+static const int MouseScrollDeltaAbsoluteMax = 6;
 static int xi_opcode;
 
 //
@@ -95,7 +99,33 @@ XWindowsScreen::XWindowsScreen(
     m_impl = impl;
 	assert(s_screen == NULL);
 
-	if (mouseScrollDelta==0) m_mouseScrollDelta=12;
+    // Constrain to -MouseScrollDeltaAbsoluteMax through MouseScrollDeltaAbsoluteMax (default: 6)
+    if (mouseScrollDelta > MouseScrollDeltaAbsoluteMax) {
+        m_mouseScrollDelta = MouseScrollDeltaAbsoluteMax;
+    }
+    else if (mouseScrollDelta < -MouseScrollDeltaAbsoluteMax) {
+        m_mouseScrollDelta = -MouseScrollDeltaAbsoluteMax;
+    }
+
+    // Initialize m_mouseScrollScaler
+    const std::array<std::array<int, 8>, 13> scaler_table {{
+       // 0, 1, 2, 3, 4, 5, 6, 7+
+        {{1, 1, 1, 1, 1, 1, 1, 1}}, // -6
+        {{1, 1, 1, 1, 1, 1, 1, 2}}, // -5
+        {{1, 1, 1, 1, 1, 1, 1, 3}}, // -4
+        {{1, 1, 1, 1, 1, 1, 1, 4}}, // -3
+        {{1, 1, 1, 1, 1, 1, 2, 4}}, // -2
+        {{1, 1, 1, 1, 1, 1, 2, 5}}, // -1
+        {{1, 1, 1, 1, 1, 2, 3, 5}}, //  0
+        {{1, 1, 1, 2, 2, 3, 4, 5}}, //  1
+        {{1, 1, 1, 2, 2, 3, 4, 6}}, //  2
+        {{1, 1, 2, 2, 3, 3, 5, 6}}, //  3
+        {{1, 1, 2, 3, 4, 5, 6, 7}}, //  4
+        {{1, 1, 3, 4, 4, 6, 6, 8}}, //  5
+        {{1, 2, 3, 4, 6, 6, 8, 10}} //  6
+    }};
+    m_mouseScrollScaler = scaler_table[MouseScrollDeltaAbsoluteMax + m_mouseScrollDelta];
+
 	s_screen = this;
 
 	if (!disableXInitThreads) {
@@ -843,9 +873,8 @@ XWindowsScreen::fakeMouseWheel(SInt32 xDelta, SInt32 yDelta) const
     unsigned int xButton;
 
     if (yDelta) { // vertical scroll
-        numEvents = y_accumulateMouseScroll(yDelta);
-        numEvents = std::max(1, std::abs(numEvents) / m_mouseScrollDelta);
-        LOG((CLOG_DEBUG "mouse wheel yscroll %d", numEvents));
+        numEvents = y_scaleMouseScroll(yDelta);
+        LOG((CLOG_DEBUG "mouse wheel raw:%d  scaled:%d", yDelta, numEvents));
         if (yDelta >= 0) {
             xButton = 4; // up
         }
@@ -1625,7 +1654,7 @@ int
 XWindowsScreen::x_accumulateMouseScroll(SInt32 xDelta) const
 {
     m_x_accumulatedScroll += xDelta;
-    int numEvents = m_x_accumulatedScroll / m_mouseScrollDelta;
+    int numEvents = (m_mouseScrollDelta ? m_x_accumulatedScroll / m_mouseScrollDelta : 0);
     m_x_accumulatedScroll -= numEvents * m_mouseScrollDelta;
     return numEvents;
 }
@@ -1634,9 +1663,18 @@ int
 XWindowsScreen::y_accumulateMouseScroll(SInt32 yDelta) const
 {
     m_y_accumulatedScroll += yDelta;
-    int numEvents = m_y_accumulatedScroll / m_mouseScrollDelta;
+    int numEvents = (m_mouseScrollDelta ? m_y_accumulatedScroll / m_mouseScrollDelta : 0);
     m_y_accumulatedScroll -= numEvents * m_mouseScrollDelta;
     return numEvents;
+}
+
+int
+XWindowsScreen::y_scaleMouseScroll(SInt32 yDelta) const
+{
+    const int idx_max = m_mouseScrollScaler.size() - 1;
+    int idx = std::min(idx_max, std::abs(yDelta) / 100);
+    LOG((CLOG_DEBUG1 "mouse wheel scale idx: %d  value: %d", idx, m_mouseScrollScaler[idx]));
+    return m_mouseScrollScaler[idx];
 }
 
 Cursor

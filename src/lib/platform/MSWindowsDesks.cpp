@@ -36,6 +36,9 @@
 
 #include <algorithm>
 
+static const int MouseScrollDeltaAbsoluteMax = 6;
+static const int MouseWheelDeltaWindows = 120;
+
 // these are only defined when WINVER >= 0x0500
 #if !defined(SPI_GETMOUSESPEED)
 #define SPI_GETMOUSESPEED 112
@@ -99,10 +102,15 @@
 //
 
 MSWindowsDesks::MSWindowsDesks(
-        bool isPrimary, bool noHooks,
-        const IScreenSaver* screensaver, IEventQueue* events,
-        IJob* updateKeys, bool stopOnDeskSwitch) :
+        bool isPrimary,
+        bool noHooks,
+        const IScreenSaver* screensaver,
+        IEventQueue* events,
+        IJob* updateKeys,
+        int mouseScrollDelta,
+        bool stopOnDeskSwitch) :
     m_isPrimary(isPrimary),
+    m_mouseScrollDelta(mouseScrollDelta),
     m_noHooks(noHooks),
     m_isOnScreen(m_isPrimary),
     m_x(0), m_y(0),
@@ -120,6 +128,17 @@ MSWindowsDesks::MSWindowsDesks(
     m_events(events),
     m_stopOnDeskSwitch(stopOnDeskSwitch)
 {
+    // Constrain to -MouseScrollDeltaAbsoluteMax through MouseScrollDeltaAbsoluteMax (default: 6)
+    if (mouseScrollDelta > MouseScrollDeltaAbsoluteMax) {
+        m_mouseScrollDelta = MouseScrollDeltaAbsoluteMax;
+    }
+    else if (mouseScrollDelta < -MouseScrollDeltaAbsoluteMax) {
+        m_mouseScrollDelta = -MouseScrollDeltaAbsoluteMax;
+    }
+
+    // Scaler is in the range 0.1:1.3 mapped linearly from the range -6:6
+    m_mouseScrollScaler = 0.1 * (m_mouseScrollDelta + MouseScrollDeltaAbsoluteMax + 1);
+
     m_cursor    = createBlankCursor();
     m_deskClass = createDeskWindowClass(m_isPrimary);
     m_keyLayout = GetKeyboardLayout(GetCurrentThreadId());
@@ -340,11 +359,11 @@ void
 MSWindowsDesks::fakeMouseWheel(SInt32 xDelta, SInt32 yDelta) const
 {
     if (yDelta != 0) {
-        LOG((CLOG_DEBUG "wheel pre-limit: %d", yDelta));
-        // Minimum yDelta is 120, maximum depends on scaler (remember min/max are windows macros)
-        yDelta = (yDelta < 0 ? -1 : 1) * (std::max)(120, (std::abs)(yDelta) / 2);
+        int yDelta_scaled = (yDelta < 0 ? -1 : 1) *
+            (std::max)(MouseWheelDeltaWindows, (std::abs)(yDelta) * m_mouseScrollScaler);
+        LOG((CLOG_DEBUG "mouse wheel raw:%d  scaled:%d", yDelta, yDelta_scaled));
     }
-    sendMessage(BARRIER_MSG_FAKE_WHEEL, xDelta, yDelta);
+    sendMessage(BARRIER_MSG_FAKE_WHEEL, xDelta, yDelta_scaled);
 }
 
 void
@@ -698,7 +717,6 @@ MSWindowsDesks::deskThread(void* vdesk)
 
         case BARRIER_MSG_FAKE_WHEEL:
             if (msg.lParam != 0) {
-                LOG((CLOG_DEBUG "wheel msg recvd: %d", msg.lParam));
                 mouse_event(MOUSEEVENTF_WHEEL, 0, 0, (DWORD)msg.lParam, 0);
             }
             else if (IsWindowsVistaOrGreater() && msg.wParam != 0) {

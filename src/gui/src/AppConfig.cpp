@@ -61,7 +61,7 @@ AppConfig::AppConfig(QSettings* settings) :
     m_CryptoEnabled(false),
     m_AutoHide(false),
     m_AutoStart(false),
-    m_yScroll(12),
+    m_yScroll(0),
     m_MinimizeToTray(false)
 {
     Q_ASSERT(m_pSettings);
@@ -161,7 +161,7 @@ void AppConfig::loadSettings()
     m_CryptoEnabled = settings().value("cryptoEnabled", true).toBool();
     m_AutoHide = settings().value("autoHide", false).toBool();
     m_AutoStart = settings().value("autoStart", false).toBool();
-    m_yScroll = settings().value("yScroll", 12).toInt();
+    m_yScroll = settings().value("yScroll", 0).toInt();
     m_MinimizeToTray = settings().value("minimizeToTray", false).toBool();
 }
 

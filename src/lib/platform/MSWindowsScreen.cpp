@@ -93,6 +93,7 @@ MSWindowsScreen::MSWindowsScreen(
     bool isPrimary,
     bool noHooks,
     bool stopOnDeskSwitch,
+    int mouseScrollDelta,
     IEventQueue* events) :
     PlatformScreen(events),
     m_isPrimary(isPrimary),
@@ -136,6 +137,7 @@ MSWindowsScreen::MSWindowsScreen(
                             m_events,
                             new TMethodJob<MSWindowsScreen>(
                                 this, &MSWindowsScreen::updateKeysCB),
+                            mouseScrollDelta,
                             stopOnDeskSwitch);
         m_keyState    = new MSWindowsKeyState(m_desks, getEventTarget(), m_events);
 

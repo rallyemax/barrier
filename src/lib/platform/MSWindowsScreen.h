@@ -44,6 +44,7 @@ public:
         bool isPrimary,
         bool noHooks,
         bool stopOnDeskSwitch,
+        int mouseScrollDelta,
         IEventQueue* events);
     virtual ~MSWindowsScreen();
 

@@ -163,13 +163,24 @@ barrier::Screen*
 ClientApp::createScreen()
 {
 #if WINAPI_MSWINDOWS
-    return new barrier::Screen(new MSWindowsScreen(
-        false, args().m_noHooks, args().m_stopOnDeskSwitch, m_events), m_events);
+    return new barrier::Screen(
+        new MSWindowsScreen(
+            false,
+            args().m_noHooks,
+            args().m_stopOnDeskSwitch,
+            args().m_yscroll,
+            m_events),
+        m_events);
 #elif WINAPI_XWINDOWS
-    return new barrier::Screen(new XWindowsScreen(
-        new XWindowsImpl(),
-        args().m_display, false, args().m_disableXInitThreads,
-        args().m_yscroll, m_events), m_events);
+    return new barrier::Screen(
+        new XWindowsScreen(
+            new XWindowsImpl(),
+            args().m_display,
+            false,
+            args().m_disableXInitThreads,
+            args().m_yscroll,
+            m_events),
+        m_events);
 #elif WINAPI_CARBON
     return new barrier::Screen(new OSXScreen(m_events, false), m_events);
 #endif

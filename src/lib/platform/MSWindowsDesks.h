@@ -26,6 +26,7 @@
 #include "mt/CondVar.h"
 #include "mt/Mutex.h"
 #include "common/stdmap.h"
+
 #include <string>
 
 #define WIN32_LEAN_AND_MEAN
@@ -66,9 +67,13 @@ public:
     \p hookLibrary must be a handle to the hook library.
     */
     MSWindowsDesks(
-        bool isPrimary, bool noHooks,
-        const IScreenSaver* screensaver, IEventQueue* events,
-        IJob* updateKeys, bool stopOnDeskSwitch);
+        bool isPrimary,
+        bool noHooks,
+        const IScreenSaver* screensaver,
+        IEventQueue* events,
+        IJob* updateKeys,
+        int mouseScrollDelta,
+        bool stopOnDeskSwitch);
     ~MSWindowsDesks();
 
     //! @name manipulators
@@ -247,6 +252,10 @@ private:
 private:
     // true if screen is being used as a primary screen, false otherwise
     bool                m_isPrimary;
+
+    // For adjusting scroll speed
+    int                 m_mouseScrollDelta;
+    float               m_mouseScrollScaler;
 
     // true if hooks are not to be installed (useful for debugging)
     bool                m_noHooks;
