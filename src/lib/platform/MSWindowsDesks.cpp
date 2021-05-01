@@ -359,8 +359,9 @@ void
 MSWindowsDesks::fakeMouseWheel(SInt32 xDelta, SInt32 yDelta) const
 {
     if (yDelta != 0) {
-        int yDelta_scaled = (yDelta < 0 ? -1 : 1) *
-            (std::max)(MouseWheelDeltaWindows, (std::abs)(yDelta) * m_mouseScrollScaler);
+        int yDelta_scaled = (yDelta < 0 ? -1 : 1) * (std::max)(
+            MouseWheelDeltaWindows,
+            int ((std::abs)(yDelta) * m_mouseScrollScaler));
         LOG((CLOG_DEBUG "mouse wheel raw:%d  scaled:%d", yDelta, yDelta_scaled));
     }
     sendMessage(BARRIER_MSG_FAKE_WHEEL, xDelta, yDelta_scaled);
