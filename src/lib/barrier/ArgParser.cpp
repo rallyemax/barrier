@@ -53,6 +53,11 @@ ArgParser::parseServerArgs(ServerArgs& args, int argc, const char* const* argv)
         else if (parseDeprecatedArgs(argc, argv, i)) {
             continue;
         }
+        else if (isArg(i, argc, argv, NULL, "--yscroll", 1)) {
+            // This arg is only for clients. Increment i to advance past # in "--yscroll #"
+            ++i;
+            continue;
+        }
         else if (isArg(i, argc, argv, "-a", "--address", 1)) {
             // save listen address
             args.m_barrierAddress = argv[++i];
