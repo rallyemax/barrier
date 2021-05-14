@@ -4,8 +4,7 @@ trigger:
 jobs:
 - job: WinBuild
   displayName: Windows Build
-  pool:
-    vmImage: 'windows-2019'
+  pool: Default
   variables:
     CI_ENV_BUILD_TYPE: Release
   steps:
